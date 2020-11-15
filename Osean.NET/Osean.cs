@@ -10,7 +10,7 @@ namespace Osean.NET {
                 throw new InvalidOperationException($"packet with ID of ({id}) is already registered!");
             }
 
-            var fields = typeof(T).GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance); 
+            var fields = typeof(T).GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
             var packetFields = new List<OseanPacketField>();
 
             foreach (var field in fields) {
@@ -26,22 +26,10 @@ namespace Osean.NET {
             this._packets.Add(id, new OseanPacket(id, packetFields));
         }
 
-        public bool DescribePacket(byte[] buffer, out uint id) {
-            var binary = new OseanBinary(buffer);
-
-            if (binary.Length() < 4) {
-                id = 0;
-                return false;
-            }
-
-            id = binary.ReadU32();
-            return true;
-        }
-
         public bool EncodePacket<T>(uint id, T packet, out byte[] buffer) {
             buffer = null;
 
-            if (!this._packets.ContainsKey(id)) 
+            if (!this._packets.ContainsKey(id))
                 return false;
 
             var binary = new OseanBinary();
@@ -64,7 +52,7 @@ namespace Osean.NET {
                     }
                 }
             }
-            catch { 
+            catch {
                 return false;
             }
 
@@ -119,7 +107,10 @@ namespace Osean.NET {
                 OseanDataType.R32 => binary.ReadR32(),
                 OseanDataType.R64 => binary.ReadR64(),
 
+                OseanDataType.Boolean => binary.ReadU8() != 0,
                 OseanDataType.String => binary.ReadString(),
+                OseanDataType.WString => binary.ReadWString(),
+
                 OseanDataType.Array => ((Func<Array>) (() => {
                     var array = Array.CreateInstance(this.TypeFromDataType(arrayType), binary.ReadI32());
 
@@ -137,47 +128,55 @@ namespace Osean.NET {
         private void WriteValue(OseanBinary binary, OseanDataType type, OseanDataType arrayType, object value) {
             switch (type) {
                 case OseanDataType.I8:
-                    binary.WriteI8((sbyte)value);
+                    binary.WriteI8((sbyte) value);
                     break;
-                
+
                 case OseanDataType.I16:
-                    binary.WriteI16((short)value);
+                    binary.WriteI16((short) value);
                     break;
-                
+
                 case OseanDataType.I32:
-                    binary.WriteI32((int)value);
+                    binary.WriteI32((int) value);
                     break;
-                
+
                 case OseanDataType.I64:
-                    binary.WriteI64((long)value);
+                    binary.WriteI64((long) value);
                     break;
-                
+
                 case OseanDataType.U8:
-                    binary.WriteU8((byte)value);
+                    binary.WriteU8((byte) value);
                     break;
-                
+
                 case OseanDataType.U16:
-                    binary.WriteU16((ushort)value);
+                    binary.WriteU16((ushort) value);
                     break;
-                
+
                 case OseanDataType.U32:
-                    binary.WriteU32((uint)value);
+                    binary.WriteU32((uint) value);
                     break;
 
                 case OseanDataType.U64:
-                    binary.WriteU64((ulong)value);
+                    binary.WriteU64((ulong) value);
                     break;
 
                 case OseanDataType.R32:
-                    binary.WriteR32((float)value);
+                    binary.WriteR32((float) value);
                     break;
 
                 case OseanDataType.R64:
-                    binary.WriteR64((double)value);
+                    binary.WriteR64((double) value);
+                    break;
+
+                case OseanDataType.Boolean:
+                    binary.WriteU8((byte) ((bool) value ? 1 : 0));
                     break;
 
                 case OseanDataType.String:
-                    binary.WriteString((string)value);
+                    binary.WriteString((string) value);
+                    break;
+
+                case OseanDataType.WString:
+                    binary.WriteWString((string) value);
                     break;
 
                 case OseanDataType.Array: {
@@ -212,6 +211,7 @@ namespace Osean.NET {
                 TypeCode.Single => OseanDataType.R32,
                 TypeCode.Double => OseanDataType.R64,
 
+                TypeCode.Boolean => OseanDataType.Boolean,
                 TypeCode.String => OseanDataType.String,
 
                 _ => type.IsArray
@@ -236,6 +236,7 @@ namespace Osean.NET {
                 OseanDataType.R64 => typeof(double),
 
                 OseanDataType.String => typeof(string),
+                OseanDataType.WString => typeof(string),
 
                 _ => throw new InvalidOperationException("invalid typeof(T)")
             };

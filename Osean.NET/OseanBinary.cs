@@ -22,6 +22,10 @@ namespace Osean.NET {
             return Encoding.ASCII.GetString(this._reader.ReadBytes(this._reader.ReadInt32()));
         }
 
+        internal string ReadWString() {
+            return Encoding.ASCII.GetString(this._reader.ReadBytes(this._reader.ReadInt32()));
+        }
+
         internal sbyte ReadI8() {
             return this._reader.ReadSByte();
         }
@@ -65,6 +69,11 @@ namespace Osean.NET {
         internal void WriteString(string value) {
             this._writer.Write(value.Length);
             this._writer.Write(Encoding.ASCII.GetBytes(value));
+        }
+
+        internal void WriteWString(string value) {
+            this._writer.Write(value.Length);
+            this._writer.Write(Encoding.Unicode.GetBytes(value));
         }
 
         internal void WriteI8(sbyte value) {

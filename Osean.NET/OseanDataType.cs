@@ -17,7 +17,10 @@ namespace Osean.NET {
         R32,
         R64,
 
+        Boolean,
         String,
+        WString,
+
         Array,
 
         None
