@@ -6,11 +6,15 @@ using System.Runtime.CompilerServices;
 namespace Osean.NET {
     public class Osean {
         public void RegisterPacket<T>(uint id) {
+            this.RegisterPacket(id, typeof(T));
+        }
+
+        public void RegisterPacket(uint id, Type packetType) {
             if (this._packets.ContainsKey(id)) {
                 throw new InvalidOperationException($"packet with ID of ({id}) is already registered!");
             }
 
-            var fields = typeof(T).GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+            var fields = packetType.GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
             var packetFields = new List<OseanPacketField>();
 
             foreach (var field in fields) {
@@ -242,6 +246,6 @@ namespace Osean.NET {
             };
         }
 
-        private Dictionary<uint, OseanPacket> _packets = new Dictionary<uint, OseanPacket>();
+        private readonly Dictionary<uint, OseanPacket> _packets = new Dictionary<uint, OseanPacket>();
     }
 }

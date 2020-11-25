@@ -6,121 +6,133 @@ using System.Text;
 
 namespace Osean.NET {
     internal class OseanBinary {
-        internal OseanBinary() {
+        public OseanBinary() {
             this._stream = new MemoryStream();
             this._reader = new BinaryReader(this._stream);
             this._writer = new BinaryWriter(this._stream);
         }
 
-        internal OseanBinary(byte[] buffer) {
+        public OseanBinary(byte[] buffer) {
             this._stream = new MemoryStream(buffer);
             this._reader = new BinaryReader(this._stream);
             this._writer = new BinaryWriter(this._stream);
         }
 
-        internal string ReadString() {
-            return Encoding.ASCII.GetString(this._reader.ReadBytes(this._reader.ReadInt32()));
+        public long Tell() {
+            return this._stream.Position;
         }
 
-        internal string ReadWString() {
-            return Encoding.ASCII.GetString(this._reader.ReadBytes(this._reader.ReadInt32()));
+        public void Seek(long pos) {
+            this._stream.Position = pos;
         }
 
-        internal sbyte ReadI8() {
+        public long Size() {
+            return this._stream.Length;
+        }
+
+        public string ReadString() {
+            return Encoding.ASCII.GetString(this._reader.ReadBytes((int) this._reader.ReadUInt32()));
+        }
+
+        public string ReadWString() {
+            return Encoding.UTF8.GetString(this._reader.ReadBytes((int) this._reader.ReadUInt32()));
+        }
+
+        public sbyte ReadI8() {
             return this._reader.ReadSByte();
         }
 
-        internal short ReadI16() {
+        public short ReadI16() {
             return this._reader.ReadInt16();
         }
 
-        internal int ReadI32() {
+        public int ReadI32() {
             return this._reader.ReadInt32();
         }
 
-        internal long ReadI64() {
+        public long ReadI64() {
             return this._reader.ReadInt64();
         }
 
-        internal byte ReadU8() {
+        public byte ReadU8() {
             return this._reader.ReadByte();
         }
 
-        internal ushort ReadU16() {
+        public ushort ReadU16() {
             return this._reader.ReadUInt16();
         }
 
-        internal uint ReadU32() {
+        public uint ReadU32() {
             return this._reader.ReadUInt32();
         }
 
-        internal ulong ReadU64() {
+        public ulong ReadU64() {
             return this._reader.ReadUInt64();
         }
 
-        internal float ReadR32() {
+        public float ReadR32() {
             return this._reader.ReadSingle();
         }
 
-        internal Double ReadR64() {
+        public Double ReadR64() {
             return this._reader.ReadDouble();
         }
 
-        internal void WriteString(string value) {
+        public void WriteString(string value) {
             this._writer.Write(value.Length);
             this._writer.Write(Encoding.ASCII.GetBytes(value));
         }
 
-        internal void WriteWString(string value) {
+        public void WriteWString(string value) {
             this._writer.Write(value.Length);
             this._writer.Write(Encoding.Unicode.GetBytes(value));
         }
 
-        internal void WriteI8(sbyte value) {
+        public void WriteI8(sbyte value) {
             this._writer.Write(value);
         }
 
-        internal void WriteI16(short value) {
+        public void WriteI16(short value) {
             this._writer.Write(value);
         }
 
-        internal void WriteI32(int value) {
+        public void WriteI32(int value) {
             this._writer.Write(value);
         }
 
-        internal void WriteI64(long value) {
+        public void WriteI64(long value) {
             this._writer.Write(value);
         }
 
-        internal void WriteU8(byte value) {
+        public void WriteU8(byte value) {
             this._writer.Write(value);
         }
 
-        internal void WriteU16(ushort value) {
+        public void WriteU16(ushort value) {
             this._writer.Write(value);
         }
 
-        internal void WriteU32(uint value) {
+        public void WriteU32(uint value) {
             this._writer.Write(value);
         }
 
-        internal void WriteU64(ulong value) {
+        public void WriteU64(ulong value) {
             this._writer.Write(value);
         }
 
-        internal void WriteR32(float value) {
+        public void WriteR32(float value) {
             this._writer.Write(value);
         }
 
-        internal void WriteR64(double value) {
+        public void WriteR64(double value) {
             this._writer.Write(value);
         }
 
-        internal long Length() {
+        public long Length() {
             return this._stream.Length;
         }
 
-        internal byte[] Buffer() {
+        public byte[] Buffer() {
             return this._stream.ToArray();
         }
 
